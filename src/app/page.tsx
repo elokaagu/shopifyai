@@ -1,103 +1,118 @@
-import Image from "next/image";
+'use client';
+import { useState } from "react";
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 
-export default function Home() {
+export default function PromptPage() {
+  const [prompt, setPrompt] = useState("");
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!prompt.trim()) {
+      setError('Please enter a prompt.');
+      return;
+    }
+    
+    setError('');
+    setLoading(true);
+    
+    // Simulate a short loading delay
+    try {
+      // In a real app, you might do some validation or preprocessing here
+      setTimeout(() => {
+        router.push(`/builder?prompt=${encodeURIComponent(prompt)}`);
+      }, 500);
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  const examplePrompts = [
+    "A modern store with hero, products, and testimonials",
+    "A storytelling layout with brand story first, then products",
+    "Minimalist design with large hero image and product grid"
+  ];
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#09090B] to-[#1E1E24] px-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-lg bg-white/5 backdrop-blur-lg rounded-2xl shadow-xl p-8 flex flex-col items-center border border-white/10"
+      >
+        <h1 className="text-3xl font-extrabold mb-2 text-white tracking-tight">AI Storefront Generator</h1>
+        <p className="mb-6 text-gray-300 text-center text-sm">
+          Describe your ideal store layout in natural language.
+        </p>
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+          <textarea
+            value={prompt}
+            onChange={e => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Example: A modern storefront with hero section, featured products, testimonials, and a strong call to action..."
+            className="w-full min-h-[120px] p-4 rounded-lg border border-gray-700 bg-black/30 text-white focus:outline-none focus:ring-2 focus:ring-indigo-400 transition resize-none shadow-sm"
+            aria-label="Store layout prompt"
+            disabled={loading}
+          />
+          {error && <div className="text-red-400 text-sm">{error}</div>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white font-bold py-3 rounded-lg shadow-lg transition-all text-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 disabled:opacity-70 flex items-center justify-center gap-2"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              'Generate Storefront'
+            )}
+          </button>
+        </form>
+        
+        <div className="mt-8 text-sm text-gray-400">
+          <p className="mb-2">Try one of these examples:</p>
+          <div className="flex flex-col gap-2">
+            {examplePrompts.map((examplePrompt, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setPrompt(examplePrompt);
+                  // Focus the textarea
+                  const textarea = document.querySelector('textarea');
+                  if (textarea) textarea.focus();
+                }}
+                className="text-left hover:text-indigo-300 transition-colors truncate"
+              >
+                • {examplePrompt}
+              </button>
+            ))}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.8 }}
+        className="mt-8 text-center text-gray-500 text-xs flex items-center gap-2"
+      >
+        Press <kbd className="px-2 py-1 bg-gray-800 rounded text-gray-300 text-xs font-mono">Enter ↵</kbd> to generate
+      </motion.div>
     </div>
   );
 }

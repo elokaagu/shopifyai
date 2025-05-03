@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Storefront Generator
+
+An AI-powered storefront generator using Next.js, OpenAI, and Shopify integration. Build beautiful storefronts from text prompts without coding.
+
+## Features
+
+- **AI Layout Generation**: Create storefronts by describing them in natural language
+- **Shopify Integration**: Connect to live Shopify data or use the built-in mock data
+- **Responsive Design**: Mobile-friendly layouts that work on all devices
+- **Preview Mode**: See your store before finalizing
+- **OpenAI Integration**: Generate product mockups (when API key is available)
+
+## Demo
+
+Visit the [live demo](https://storefront-generator.vercel.app) to try it out.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18+ 
+- npm or yarn
+- (Optional) OpenAI API key for image generation
+- (Optional) Shopify storefront access token
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/ai-storefront-generator.git
+   cd ai-storefront-generator
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-## Learn More
+3. Create a `.env.local` file in the root directory with your API keys (optional):
+   ```
+   OPENAI_API_KEY=your_openai_api_key
+   SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+   SHOPIFY_STOREFRONT_TOKEN=your_storefront_token
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Start the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+### Deploying to Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push your code to GitHub
+2. Visit [Vercel](https://vercel.com) and import your GitHub repository
+3. Add your environment variables in the Vercel dashboard
+4. Deploy!
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Architecture
+
+- **Next.js 15**: App Router, Server Components, Route Handlers
+- **TailwindCSS**: Styling and responsive design
+- **OpenAI**: For generating mockup images and layout suggestions
+- **Shopify Storefront API**: For real product data (with fallback mock data)
+
+## License
+
+MIT
