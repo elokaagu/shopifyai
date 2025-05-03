@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
-import { generateImages } from '../../../utils/generateImages';
 
+/**
+ * Simple mockup API that returns Picsum images
+ * No need to use OpenAI in this version
+ */
 export async function POST(req: Request) {
   try {
     const { prompts } = await req.json();
@@ -8,37 +11,30 @@ export async function POST(req: Request) {
     if (!Array.isArray(prompts)) {
       return NextResponse.json({ error: 'Prompts must be an array' }, { status: 400 });
     }
-
-    const imageUrls = await generateImages(prompts);
-    return NextResponse.json({ urls: imageUrls });
+    
+    // Generate fallback URLs directly without OpenAI
+    const imageUrls = prompts.map((_prompt, index) => 
+      `https://picsum.photos/seed/product${index + 1}/1024/1024`
+    );
+    
+    return NextResponse.json({ 
+      urls: imageUrls,
+      mockData: true
+    });
+    
   } catch (error) {
     console.error('Error in mockups API:', error);
     
-    // Use a fallback approach for errors
-    try {
-      // Try to extract prompts from the request if available
-      const data = await req.json();
-      const reqPrompts = Array.isArray(data?.prompts) ? data.prompts : [];
-      
-      // Generate fallback URLs 
-      const fallbackUrls = reqPrompts.map((_: unknown, index: number) => 
-        `https://picsum.photos/seed/fallback${index}/800/800`
-      );
-      
-      return NextResponse.json({ 
-        urls: fallbackUrls,
-        error: 'Used fallback images due to error'
-      });
-    } catch {
-      // If we can't even read the request, just return a simple fallback array
-      return NextResponse.json({ 
-        urls: [
-          'https://picsum.photos/seed/fallback1/800/800',
-          'https://picsum.photos/seed/fallback2/800/800',
-          'https://picsum.photos/seed/fallback3/800/800'
-        ],
-        error: 'Used default fallback images due to error'
-      });
-    }
+    // Return a default set of image URLs on error
+    return NextResponse.json({ 
+      urls: [
+        'https://picsum.photos/seed/fallback1/1024/1024',
+        'https://picsum.photos/seed/fallback2/1024/1024',
+        'https://picsum.photos/seed/fallback3/1024/1024',
+        'https://picsum.photos/seed/fallback4/1024/1024'
+      ],
+      mockData: true,
+      error: 'Used default fallback images due to error'
+    });
   }
 } 
