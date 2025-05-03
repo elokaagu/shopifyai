@@ -1,24 +1,28 @@
 import OpenAI from 'openai';
 
-// Initialize OpenAI only if API key is available
-const openai = process.env.OPENAI_API_KEY 
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+/**
+ * Generates mock product images when OpenAI API is not available
+ */
+function generateMockImages(prompts: string[]): string[] {
+  return prompts.map((_, index) => {
+    return `https://picsum.photos/seed/product${index + 1}/1024/1024`;
+  });
+}
 
-export async function generateImages(prompts: string[]): Promise<string[]> {
-  // If OpenAI is not available, use Picsum for mock images
-  if (!openai) {
-    console.log('Using mock images from Picsum (OpenAI API key not available)');
-    return prompts.map((_, index) => {
-      // Use different seed for each image to get varied results
-      return `https://picsum.photos/seed/product${index + 1}/1024/1024`;
-    });
+/**
+ * Attempts to generate real images with OpenAI
+ * Falls back to mock images if anything fails
+ */
+async function generateRealImages(prompts: string[], apiKey: string): Promise<string[]> {
+  if (!apiKey) {
+    return generateMockImages(prompts);
   }
-
-  // If OpenAI is available, use it
+  
   try {
+    const openai = new OpenAI({ apiKey });
+    
     const results = await Promise.all(
-      prompts.map(async (prompt) => {
+      prompts.map(async (prompt, index) => {
         try {
           const response = await openai.images.generate({
             model: "dall-e-3",
@@ -27,24 +31,35 @@ export async function generateImages(prompts: string[]): Promise<string[]> {
             size: "1024x1024",
           });
           
-          // Ensure we have a valid URL
           if (response.data?.[0]?.url) {
             return response.data[0].url;
           }
           
-          // Fallback to Picsum if OpenAI doesn't return a valid URL
-          return `https://picsum.photos/seed/${encodeURIComponent(prompt)}/1024/1024`;
+          return `https://picsum.photos/seed/product${index}/1024/1024`;
         } catch (error) {
           console.error(`Error generating image for prompt "${prompt}":`, error);
-          // Fallback to Picsum on error
-          return `https://picsum.photos/seed/${encodeURIComponent(prompt)}/1024/1024`;
+          return `https://picsum.photos/seed/product${index}/1024/1024`;
         }
       })
     );
     return results;
   } catch (error) {
-    console.error('Error generating images:', error);
-    // Return Picsum URLs on error
-    return prompts.map((_, index) => `https://picsum.photos/seed/fallback${index}/1024/1024`);
+    console.error('Error initializing OpenAI or generating images:', error);
+    return generateMockImages(prompts);
   }
+}
+
+/**
+ * Main export function for generating images
+ * Automatically handles API key presence
+ */
+export async function generateImages(prompts: string[]): Promise<string[]> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  
+  if (!apiKey) {
+    console.log('Using mock images from Picsum (OpenAI API key not available)');
+    return generateMockImages(prompts);
+  }
+  
+  return generateRealImages(prompts, apiKey);
 } 
