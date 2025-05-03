@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
 import { systemPrompt, examples } from '../../../utils/llmPrompt';
 
 // Default fallback layout
@@ -19,11 +18,6 @@ const VALID_SECTIONS = [
   "FooterSection"
 ];
 
-// Initialize OpenAI client if API key is available
-const openai = process.env.OPENAI_API_KEY 
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
-
 export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
@@ -35,44 +29,52 @@ export async function POST(req: Request) {
 
     console.log(`Processing prompt: "${prompt.substring(0, 50)}${prompt.length > 50 ? '...' : ''}"`);
     
-    // Check if OpenAI client is available
-    if (!openai) {
+    // Check if OpenAI API key is available
+    if (!process.env.OPENAI_API_KEY) {
       console.log('No OpenAI API key provided, using mock response');
       return NextResponse.json(mockGenerateLayout(prompt));
     }
     
-    // Try to generate a layout with retries
-    let layoutResult;
+    // We only import OpenAI dynamically if the API key is available
     try {
-      layoutResult = await generateLayout(prompt, openai);
-    } catch (error) {
-      console.error('First attempt failed, retrying...', error);
+      const { default: OpenAI } = await import('openai');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      
+      // Try to generate a layout with retries
       try {
-        // Retry once on failure
-        layoutResult = await generateLayout(prompt, openai);
-      } catch (retryError) {
-        console.error('Retry failed, using fallback layout', retryError);
-        return NextResponse.json(FALLBACK_LAYOUT);
+        const layoutResult = await generateLayout(prompt, openai);
+        return NextResponse.json(layoutResult);
+      } catch (error) {
+        console.error('First attempt failed, retrying...', error);
+        try {
+          // Retry once on failure
+          const layoutResult = await generateLayout(prompt, openai);
+          return NextResponse.json(layoutResult);
+        } catch (retryError) {
+          console.error('Retry failed, using fallback layout', retryError);
+          return NextResponse.json(FALLBACK_LAYOUT);
+        }
       }
+    } catch (error) {
+      console.error('Error initializing OpenAI:', error);
+      return NextResponse.json(mockGenerateLayout(prompt));
     }
-
-    return NextResponse.json(layoutResult);
   } catch (error) {
     console.error('Error in build-layout API:', error);
     return NextResponse.json(FALLBACK_LAYOUT);
   }
 }
 
-async function generateLayout(prompt: string, client: OpenAI) {
+async function generateLayout(prompt: string, client: any) {
   const response = await client.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
-      { role: "system" as const, content: systemPrompt },
+      { role: "system", content: systemPrompt },
       ...examples.map(ex => ({ 
         role: ex.role as "user" | "assistant" | "system", 
         content: ex.content 
       })),
-      { role: "user" as const, content: prompt }
+      { role: "user", content: prompt }
     ],
     temperature: 0.2,
     max_tokens: 300,
