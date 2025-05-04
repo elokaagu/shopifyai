@@ -54,7 +54,7 @@ export default function HeroSection() {
   }, []);
 
   // Default image URL as fallback
-  const fallbackImageUrl = "https://picsum.photos/1600/900";
+  const fallbackImageUrl = "/placeholder-hero.jpg";
 
   return (
     <section className="relative w-full h-[70vh] flex items-center justify-center overflow-hidden">

@@ -7,7 +7,7 @@ export async function mockShopifyQuery<T>(query: string, vars: { handle?: string
         name: "Demo Store", 
         storefrontHomepageCollection: { 
           image: { 
-            url: "https://picsum.photos/1600/900" 
+            url: "/placeholder-hero.jpg"
           } 
         } 
       }
@@ -68,12 +68,12 @@ const MOCK_PRODUCTS = [
       }
     },
     featuredImage: { 
-      url: "https://picsum.photos/seed/chair/400/400" 
+      url: "/placeholder-product.jpg?seed=chair"
     },
     images: {
       edges: [
-        { node: { url: "https://picsum.photos/seed/chair/400/400" } },
-        { node: { url: "https://picsum.photos/seed/chair2/400/400" } }
+        { node: { url: "/placeholder-product.jpg?seed=chair" } },
+        { node: { url: "/placeholder-product.jpg?seed=chair2" } }
       ]
     },
     variants: {
@@ -94,12 +94,12 @@ const MOCK_PRODUCTS = [
       }
     },
     featuredImage: { 
-      url: "https://picsum.photos/seed/lamp/400/400" 
+      url: "/placeholder-product.jpg?seed=lamp"
     },
     images: {
       edges: [
-        { node: { url: "https://picsum.photos/seed/lamp/400/400" } },
-        { node: { url: "https://picsum.photos/seed/lamp2/400/400" } }
+        { node: { url: "/placeholder-product.jpg?seed=lamp" } },
+        { node: { url: "/placeholder-product.jpg?seed=lamp2" } }
       ]
     },
     variants: {
@@ -120,12 +120,12 @@ const MOCK_PRODUCTS = [
       }
     },
     featuredImage: { 
-      url: "https://picsum.photos/seed/pillow/400/400" 
+      url: "/placeholder-product.jpg?seed=pillow"
     },
     images: {
       edges: [
-        { node: { url: "https://picsum.photos/seed/pillow/400/400" } },
-        { node: { url: "https://picsum.photos/seed/pillow2/400/400" } }
+        { node: { url: "/placeholder-product.jpg?seed=pillow" } },
+        { node: { url: "/placeholder-product.jpg?seed=pillow2" } }
       ]
     },
     variants: {
@@ -146,12 +146,12 @@ const MOCK_PRODUCTS = [
       }
     },
     featuredImage: { 
-      url: "https://picsum.photos/seed/table/400/400" 
+      url: "/placeholder-product.jpg?seed=table"
     },
     images: {
       edges: [
-        { node: { url: "https://picsum.photos/seed/table/400/400" } },
-        { node: { url: "https://picsum.photos/seed/table2/400/400" } }
+        { node: { url: "/placeholder-product.jpg?seed=table" } },
+        { node: { url: "/placeholder-product.jpg?seed=table2" } }
       ]
     },
     variants: {

@@ -3,9 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     domains: [
-      'source.unsplash.com',
-      'oaidalleapiprodscus.blob.core.windows.net',
-      'picsum.photos',
+      // We're using local placeholder images now
     ],
   },
 };
