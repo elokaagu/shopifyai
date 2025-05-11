@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint && tsc --noEmit",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
